@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SneakerDrop — Реєстрація</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <h1>SneakerDrop</h1>
+            <nav id="nav-bar">
+                <a href="index.html">Каталог</a>
+                <span id="auth-links"></span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="auth-main">
+        <div class="auth-card">
+            <h2>Реєстрація</h2>
+            <div id="error-box" class="alert-error" style="display:none;"></div>
+            <div id="success-box" class="alert-success" style="display:none;"></div>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="reg-username">Username *:</label>
+                    <input type="text" id="reg-username" required maxlength="150">
+                    <small class="field-error" id="err-username"></small>
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">Email *:</label>
+                    <input type="email" id="reg-email" required maxlength="254">
+                    <small class="field-error" id="err-email"></small>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reg-first-name">Ім'я:</label>
+                        <input type="text" id="reg-first-name" maxlength="150">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-last-name">Прізвище:</label>
+                        <input type="text" id="reg-last-name" maxlength="150">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Пароль * (мін. 8 символів):</label>
+                    <input type="password" id="reg-password" required minlength="8" maxlength="128">
+                    <small class="field-error" id="err-password"></small>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password-confirm">Підтвердження пароля *:</label>
+                    <input type="password" id="reg-password-confirm" required minlength="8" maxlength="128">
+                    <small class="field-error" id="err-password_confirm"></small>
+                </div>
+                <button type="submit" class="btn btn-primary">Зареєструватися</button>
+            </form>
+            <p class="auth-footer">Вже зареєстровані? <a href="login.html">Увійти</a></p>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        $(document).ready(function() {
+            if (Auth.isAuthenticated()) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            $('#register-form').on('submit', async function(e) {
+                e.preventDefault();
+                $('.field-error').text('');
+                $('#error-box').hide();
+                $('#success-box').hide();
+
+                const payload = {
+                    username: $('#reg-username').val().trim(),
+                    email: $('#reg-email').val().trim(),
+                    first_name: $('#reg-first-name').val().trim(),
+                    last_name: $('#reg-last-name').val().trim(),
+                    password: $('#reg-password').val(),
+                    password_confirm: $('#reg-password-confirm').val()
+                };
+
+                try {
+                    await Auth.register(payload);
+                    $('#success-box').text('Реєстрація успішна! Переходимо до входу...').show();
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1500);
+                } catch (errData) {
+                    if (errData.details) {
+                        for (let field in errData.details) {
+                            $(`#err-${field}`).text(errData.details[field].join(' '));
+                        }
+                    } else {
+                        $('#error-box').text(errData.message || 'Помилка реєстрації').show();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

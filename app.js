@@ -10,7 +10,7 @@ $(document).ready(function() {
             $catalog.empty();
 
             if (data.length === 0) {
-                $catalog.append('<p>Товарів не знайдено. Додайте їх через адмінку бекенду</p>');
+                $catalog.append('<p>Товарів не знайдено. Додайте їх через адмінку бекенду.</p>');
                 return;
             }
 
