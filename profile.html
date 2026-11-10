@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SneakerDrop — Особистий кабінет</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <h1>SneakerDrop</h1>
+            <nav id="nav-bar">
+                <a href="index.html">Каталог</a>
+                <span id="auth-links"></span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="auth-main">
+        <div class="auth-card profile-card">
+            <h2>Особистий кабінет</h2>
+            <div id="user-info">
+                <p>Завантаження даних профілю...</p>
+            </div>
+
+            <div id="admin-panel" style="display:none;" class="admin-box">
+                <hr>
+                <h3>Панель адміністратора</h3>
+                <p class="role-badge admin">Роль: Адміністратор системи</p>
+                <p>Вам дозволено додавати, редагувати та видаляти товари в базі через API.</p>
+                <a href="http://127.0.0.1:8000/admin/" target="_blank" class="btn btn-secondary">Перейти в Django Admin</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        $(document).ready(async function() {
+            if (!Auth.isAuthenticated()) {
+                window.location.href = 'login.html?next=profile.html';
+                return;
+            }
+
+            try {
+                const user = await Auth.getCurrentUser();
+                $('#user-info').html(`
+                    <p><strong>Username:</strong> ${user.username}</p>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <p><strong>Ім'я та прізвище:</strong> ${user.first_name || '-'} ${user.last_name || '-'}</p>
+                    <p><strong>Статус:</strong> ${user.is_staff ? '<span class="badge admin">Адміністратор</span>' : '<span class="badge user">Клієнт</span>'}</p>
+                `);
+
+                if (user.is_staff) {
+                    $('#admin-panel').show();
+                }
+            } catch (err) {
+                console.error('Помилка отримання профілю:', err);
+                Auth.logout();
+            }
+        });
+    </script>
+</body>
+</html>

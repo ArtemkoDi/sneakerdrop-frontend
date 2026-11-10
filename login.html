@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SneakerDrop — Вхід</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <h1>SneakerDrop</h1>
+            <nav id="nav-bar">
+                <a href="index.html">Каталог</a>
+                <span id="auth-links"></span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="auth-main">
+        <div class="auth-card">
+            <h2>Вхід до акаунта</h2>
+            <div id="error-box" class="alert-error" style="display:none;"></div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Ім'я користувача (Username):</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Увійти</button>
+            </form>
+            <p class="auth-footer">Немає акаунта? <a href="register.html">Зареєструватися</a></p>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        $(document).ready(function() {
+            if (Auth.isAuthenticated()) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            $('#login-form').on('submit', async function(e) {
+                e.preventDefault();
+                $('#error-box').hide().text('');
+
+                const username = $('#username').val().trim();
+                const password = $('#password').val();
+
+                try {
+                    await Auth.login(username, password);
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const nextUrl = urlParams.get('next') || 'profile.html';
+                    window.location.href = nextUrl;
+                } catch (err) {
+                    $('#error-box').text(err.message || 'Невірний логін або пароль').show();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
